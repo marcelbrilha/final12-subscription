@@ -4,6 +4,9 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.final12.final12subscription.entities.Stage;
@@ -12,6 +15,7 @@ import com.final12.final12subscription.exceptions.ObjectNotFoundException;
 import com.final12.final12subscription.repositories.SubscriptionRepository;
 import com.final12.final12subscription.services.StageService;
 import com.final12.final12subscription.services.SubscriptionService;
+import com.final12.final12subscription.services.dto.SubscriptionDTO;
 import com.final12.final12subscription.services.dto.SubscriptionNewDTO;
 import com.final12.final12subscription.services.dto.SubscriptionUpdateDTO;
 
@@ -60,6 +64,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		subscriptionUpdate.setEtapa(stage);
 		
 		return subscriptionRepository.save(subscriptionUpdate);
+	}
+
+	@Override
+	public Page<SubscriptionDTO> search(String fundo, Integer page, Integer linesPerPage, String orderBy, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		Page<Subscription> pageSubscription = null;
+		
+		if (fundo != null && !fundo.isEmpty()) {	
+			pageSubscription = subscriptionRepository.findByFundo(fundo, pageRequest);
+		} else {
+			pageSubscription = subscriptionRepository.findAll(pageRequest);
+		}
+		
+		return pageSubscription.map(subscription -> new SubscriptionDTO(subscription));
 	}
 
 }
