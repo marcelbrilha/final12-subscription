@@ -15,6 +15,7 @@ import com.final12.final12subscription.exceptions.ObjectNotFoundException;
 import com.final12.final12subscription.repositories.SubscriptionRepository;
 import com.final12.final12subscription.services.StageService;
 import com.final12.final12subscription.services.SubscriptionService;
+import com.final12.final12subscription.services.dto.EmissionDTO;
 import com.final12.final12subscription.services.dto.SubscriptionDTO;
 import com.final12.final12subscription.services.dto.SubscriptionNewDTO;
 import com.final12.final12subscription.services.dto.SubscriptionUpdateDTO;
@@ -78,6 +79,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		}
 		
 		return pageSubscription.map(subscription -> new SubscriptionDTO(subscription));
+	}
+
+	@Override
+	public Page<EmissionDTO> findAll(String fundo, Long etapa, Integer page, Integer linesPerPage, String orderBy, String direction) throws Exception {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		Page<Subscription> pageSubscription = null;
+		Stage stage = stageService.findById(etapa);
+		
+		if (fundo != null && !fundo.isEmpty()) {
+			pageSubscription = subscriptionRepository.findByFundoAndEtapa(fundo, stage, pageRequest);
+		} else {
+			pageSubscription = subscriptionRepository.findByEtapa(stage, pageRequest);
+		}
+		
+		return pageSubscription.map(subscription -> new EmissionDTO(subscription));
 	}
 
 }
