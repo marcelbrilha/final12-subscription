@@ -14,7 +14,10 @@ import com.final12.final12subscription.repositories.StageRepository;
 import com.final12.final12subscription.services.StageService;
 import com.final12.final12subscription.services.dto.StageDTO;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class StageServiceImpl implements StageService {
 
 	@Autowired
@@ -22,6 +25,8 @@ public class StageServiceImpl implements StageService {
 
 	@Override
 	public List<StageDTO> findAll() {
+		log.info("Iniciando a pesquisa de todas as etapas");
+		
 		List<StageDTO> stagesDTO = new ArrayList<>();
 		List<Stage> stages = repository.findAll();
 
@@ -35,6 +40,8 @@ public class StageServiceImpl implements StageService {
 
 	@Override
 	public Stage findById(Long id) throws Exception {
+		log.info("Pesquisando por uma etapa: " + id);
+		
 		Optional<Stage> stage = repository.findById(id);
 		
 		return stage.orElseThrow(() -> new ObjectNotFoundException(

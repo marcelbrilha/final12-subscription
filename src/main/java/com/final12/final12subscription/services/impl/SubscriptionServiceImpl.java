@@ -20,7 +20,10 @@ import com.final12.final12subscription.services.dto.SubscriptionDTO;
 import com.final12.final12subscription.services.dto.SubscriptionNewDTO;
 import com.final12.final12subscription.services.dto.SubscriptionUpdateDTO;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class SubscriptionServiceImpl implements SubscriptionService {
 
 	@Autowired
@@ -34,6 +37,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	
 	@Override
 	public Subscription create(SubscriptionNewDTO subscriptionNewDTO) throws Exception {
+		log.info("Iniciando criação de uma nova subscrição: " + subscriptionNewDTO);
+		
 		Subscription subscription = this.modelMapper.map(subscriptionNewDTO, Subscription.class);
 		Stage stage = stageService.findById(subscriptionNewDTO.getEtapa());
 		subscription.setEtapa(stage);
@@ -43,6 +48,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 	@Override
 	public Subscription findById(Long id) throws Exception {
+		log.info("Buscando uma subscrição: " + id);
+		
 		Optional<Subscription> subscription = subscriptionRepository.findById(id);
 		
 		return subscription.orElseThrow(() -> new ObjectNotFoundException(
@@ -51,12 +58,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 	@Override
 	public void delete(Long id) throws Exception {
+		log.info("Removendo a subscrição: " + id);
+		
 		Subscription subscription = findById(id);
 		subscriptionRepository.delete(subscription);
 	}
 
 	@Override
 	public Subscription update(Long id, SubscriptionUpdateDTO subscriptionUpdateDTO) throws Exception {
+		log.info("Atualizando uma subscrição: " + subscriptionUpdateDTO);
+		
 		Subscription subscription = findById(id);
 		Subscription subscriptionUpdate = this.modelMapper.map(subscriptionUpdateDTO, Subscription.class);
 		Stage stage = stageService.findById(subscriptionUpdateDTO.getEtapa());
@@ -69,6 +80,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 	@Override
 	public Page<SubscriptionDTO> search(String fundo, Integer page, Integer linesPerPage, String orderBy, String direction) {
+		log.info("Pesquisando uma subscrição: " + fundo);
+		
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		Page<Subscription> pageSubscription = null;
 		
@@ -83,6 +96,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 	@Override
 	public Page<EmissionDTO> findAll(String fundo, Long etapa, Integer page, Integer linesPerPage, String orderBy, String direction) throws Exception {
+		log.info("Pesquisando todas as subscrições: " + fundo);
+		
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		Page<Subscription> pageSubscription = null;
 		Stage stage = stageService.findById(etapa);
